@@ -1,0 +1,49 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $in=shift;
+
+my %g;
+open(G, "< data/all.genes");
+while(my $i=<G>) { chomp($i); $g{$i}=1; }
+
+open(IN, "< $in");
+my %r; my %lr; my $f=1;
+while(my $i=<IN>) {
+  chomp($i);
+  
+  $i=~s/Adipose\.vo/Adipose-vo/g;
+  $i=~s/Adipose\.sc/Adipose-sc/g;
+
+  my @l=split(/\s+/,$i);
+
+  if ((!($l[1]=~/Intercept/)) && (!($l[1]=~/MAF/))) { 
+  #$l[0]=$1;
+  my $locus=$l[0]; my $gene;
+
+  if ($l[1]=~/(.*)\.CDS/) { $gene=$1; $f=10; }
+  elsif ($l[1]=~/(.*)\.DHS/) { $gene=$1; $f=1; }
+  elsif ($l[1]=~/(.*)\.DIST/) { $gene=$1; $f=1; }
+  elsif ($l[1]=~/[^\.*]\.(.*$)/) { $gene=$1; $f=1; }
+
+  $gene=~s/\./-/;
+
+  if ($l[2] eq ".") { $l[2]=0; }
+
+  if ($gene && $l[2]>0) { $r{$locus}{$gene}+=$l[2]*$f; }
+
+  #$lr{$locus}+=$l[2]*$f;
+
+}
+}
+
+foreach my $loc (keys %r) {
+  foreach my $gene (keys %{$r{$loc}}) {
+    #my $s = $r{$loc}{$gene}/$lr{$loc};
+    if (exists $g{$gene}) { 
+    # print "$loc.$tag\t$gene\t$r{$loc}{$gene}\n"; 
+    print "$loc\t$gene\t$r{$loc}{$gene}\n";
+    }
+  }
+}
