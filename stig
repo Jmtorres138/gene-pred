@@ -9,7 +9,7 @@ use Carp;
 use Lingua::Stem qw(stem stem_in_place);
 use vars qw(%Opt);
 
-GetOptions(\%Opt, qw(q=s db=s ow omim=s p=s)) || pod2usage(1);
+GetOptions(\%Opt, qw(q=s db=s o=s)) || pod2usage(1);
 pod2usage(-verbose => 1, -message => "STIG - semantic text indexing of genes\n\nArguments:\n--q query document\n--db document database\n") if (!($Opt{db}&&$Opt{q}));
 
 open(WO, "> query.words.out");
@@ -18,7 +18,7 @@ open(M, "> words.matrix");
 
 my @db = split(/\n/,`ls $Opt{db}`);
 my $i=0; while($i<scalar(@db)) { $db[$i]=~s/\s+//; $i++; }
-my %sw; open(S, "< /Volumes/KG1/Users/kgaulton/Documents/gene_info/pubmed.stop"); while(<S>) { chomp($_); $sw{$_}=1; }
+my %sw; open(S, "< res/pubmed.stop"); while(<S>) { chomp($_); $sw{$_}=1; }
 
 my %wdb; my $dc=0; my %wdf; my %ddb;
 foreach my $doc (@db) {
@@ -87,11 +87,12 @@ while($x<19689) {
   $x++;
 }
 
+open(O, "> $Opt{o}");
 my $g = `R --vanilla < run_lsa.R`;
 my @gl = split(/\n/,$g);
 my $y=0;
 foreach my $ge (@gl) {
-  if ($ge=~/^\[/) { my @sp=split(/\s+/,$ge); print "$di{$y}\t$sp[1]\n"; $y++; }
+  if ($ge=~/^\[/) { my @sp=split(/\s+/,$ge); print O "$di{$y}\t$sp[1]\n"; $y++; }
 }
 
 sub get_cos {
