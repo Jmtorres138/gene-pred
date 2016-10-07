@@ -1,0 +1,46 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $in1=shift;
+my $in2=shift;
+
+open(IN, "< $in1");
+my %c; my %cs;
+my $max1=0; my $min1=10;
+while(my $i=<IN>) {
+  chomp($i);
+  my @l=split(/\t/,$i);
+  $c{$l[0]}{$l[1]}[0]=$l[2];  
+  $cs{$l[0]}[0]+=$l[2];
+  if ($l[2]>$max1) { $max1=$l[2]; } if ($l[2]<$min1) { $min1=$l[2]; }
+} 
+
+open(IN, "< $in2");
+my $max2=0; my $min2=0;
+while(my $i=<IN>) {
+  chomp($i);
+  my @l=split(/\t/,$i);
+  if ($l[2]>0) { $c{$l[0]}{$l[1]}[1]=$l[2]; $cs{$l[0]}[1]+=$l[2]; if ($l[2]>$max2) { $max2=$l[2]; } if ($l[2]<$min2) { $min2=$l[2]; } }
+}
+
+foreach my $locus (keys %c) {
+  my %g;
+
+  foreach my $gene (keys %{$c{$locus}}) {
+    if (!($c{$locus}{$gene}[0])) { $c{$locus}{$gene}[0]=0; }
+    if (!($c{$locus}{$gene}[1])) { $c{$locus}{$gene}[1]=0; }
+    if ($cs{$locus}[0]>0) { $c{$locus}{$gene}[0] = $c{$locus}{$gene}[0] / $cs{$locus}[0]; } # = $c{$locus}{$gene}[0]/($max1-$min1); }     #= $c{$locus}{$gene}[0] / $cs{$locus}[0]; }
+    if ($cs{$locus}[1]>0) { $c{$locus}{$gene}[1] = $c{$locus}{$gene}[1] / $cs{$locus}[1]; } # = $c{$locus}{$gene}[1]/($max2-$min2); }     #= $c{$locus}{$gene}[1] / $cs{$locus}[1]; }
+    my $s=$c{$locus}{$gene}[0]+$c{$locus}{$gene}[1];
+    $g{$locus}+=$s;
+  }
+
+  foreach my $gene (sort { $a <=> $b } keys %{$c{$locus}}) { 
+    my $s=($c{$locus}{$gene}[0]+$c{$locus}{$gene}[1])/$g{$locus};
+    my $s1 = sprintf("%.4f",$c{$locus}{$gene}[0]);
+    my $s2 = sprintf("%.4f",$c{$locus}{$gene}[1]);
+    my $ss = sprintf("%.4f",$s);
+    print "$locus\t$gene\t$s1\t$s2\t$ss\n";
+  }
+}
