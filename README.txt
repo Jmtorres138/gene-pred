@@ -6,14 +6,14 @@ gene prediction scripts and data
 stig
 runs semantic mapping
 requires: Perl PDL library, Lingua::Stem; R packages lsa and SnowballC
-run: ./stig --q data/T2D.query.manual.txt --db data/gene-db/ --o output_file1
+run: ./stig --q res/T2D.query.manual.txt --db data/gene-db/ --o output_file1
 --q, query .txt file
 --db, database of gene annotation files
 --o, output
 
 map.semantic
 maps semantic output to genes at T2D loci
-run: ./map.semantic data/T2D-loci.all.genes output_file1 > output_file1-2
+run: ./map.semantic res/T2D-loci.all.genes2 output_file1 > output_file1-2
 
 # diabetes association mapping
 
@@ -33,3 +33,7 @@ fun: ./frmt.pred output_file2 > output_file2-2
 # merge results
 merge
 run: ./merge output_file1-2 output_file2-2 > merged.output
+
+# resources
+Resource package can be found here
+https://www.dropbox.com/sh/d1z9ota2uw807to/AADbJ_suBCDL7xXxbRzVnbCva?dl=0

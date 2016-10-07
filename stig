@@ -9,15 +9,16 @@ use Carp;
 use Lingua::Stem qw(stem stem_in_place);
 use vars qw(%Opt);
 
-GetOptions(\%Opt, qw(q=s db=s o=s)) || pod2usage(1);
-pod2usage(-verbose => 1, -message => "STIG - semantic text indexing of genes\n\nArguments:\n--q query document\n--db document database\n--o, output file\n") if (!($Opt{db}&&$Opt{q}));
+GetOptions(\%Opt, qw(q=s db=s ow omim=s p=s)) || pod2usage(1);
+pod2usage(-verbose => 1, -message => "STIG - semantic text indexing of genes\n\nArguments:\n--q query document\n--db document database\n") if (!($Opt{db}&&$Opt{q}));
 
-open(WO, "> words.out");
+open(WO, "> query.words.out");
+open(DO, "> corpus.words.out");
 open(M, "> words.matrix");
 
 my @db = split(/\n/,`ls $Opt{db}`);
 my $i=0; while($i<scalar(@db)) { $db[$i]=~s/\s+//; $i++; }
-my %sw; open(S, "< data/stoplist"); while(<S>) { chomp($_); $sw{$_}=1; }
+my %sw; open(S, "< /Volumes/KG1/Users/kgaulton/Documents/gene_info/pubmed.stop"); while(<S>) { chomp($_); $sw{$_}=1; }
 
 my %wdb; my $dc=0; my %wdf; my %ddb;
 foreach my $doc (@db) {
@@ -70,27 +71,27 @@ my $tv = join("\t",@pv);
 $tv=~s/\[//; $tv=~s/\]//;
 print M "query\t$tv\n";
 
-my $n=scalar(@pv)+1;
+#my $n=scalar(@pv)+1;
 
 foreach my $word (sort { $qw{$b} <=> $qw{$a} } keys %qw) { if (exists $wdb{$word}) { print WO "$word\t$qw{$word}\n"; } }
+foreach my $word (sort { $wdb{$b} <=> $wdb{$a} } keys %wdb) { if (exists $wdb{$word}) { print DO "$word\t$wdb{$word}\n"; } }
 
 open(R, "> run_lsa.R");
 print R "w <- read.table(\"words.matrix\",sep=\"\\t\")\n";
-print R "wm <- as.matrix(w[,2:$n])\n";
+print R "wm <- as.matrix(w[,2:ncol(w)])\n";
 print R "library(lsa)\n";
 print R "l <- lsa(wm)\n";
 my $x=1;
-while($x<18003) {
-  print R "cosine(l\$tk[$x,],l\$tk[18003,])\n";
+while($x<19689) {
+  print R "cosine(l\$tk[$x,],l\$tk[19689,])\n";
   $x++;
 }
 
-open(O, "> $Opt{o}");
 my $g = `R --vanilla < run_lsa.R`;
 my @gl = split(/\n/,$g);
 my $y=0;
 foreach my $ge (@gl) {
-  if ($ge=~/^\[/) { my @sp=split(/\s+/,$ge); print O "$di{$y}\t$sp[1]\n"; $y++; }
+  if ($ge=~/^\[/) { my @sp=split(/\s+/,$ge); print "$di{$y}\t$sp[1]\n"; $y++; }
 }
 
 sub get_cos {
@@ -121,12 +122,16 @@ sub doc_words {
   $d=~s/\)/ /g;
   $d=~s/\./ /g;
   $d=~s/-/ /g;
+  $d=~s/_/ /g;
+  $d=~s/#/ /g;
+  $d=~s/,/ /g;
+  $d=~s/:/ /g; 
 
   my @dwa = split(/\s+/, $d);   
   foreach my $word (@dwa) {
   my $lcword = lc($word);
-    if (swords($lcword)) {
-      if ($lcword =~ /^[a-z]+$/) {
+    if (swords($lcword) && length($lcword)>2) {
+      if ($lcword =~ /^[a-z0-9]+$/) {
         my @ta;
         push(@ta,$lcword);
         stem_in_place(@ta);
@@ -140,12 +145,12 @@ sub doc_words {
 
   foreach my $word (keys %dw) {  
     #my $tf = $dw{$word}/$tw; 
-    #my $tf = 1+log($dw{$word});
+    my $tf = 1+log($dw{$word});
     #my $tf=1;
     
-    my $tf;
-    if ($t==1) { $tf = $dw{$word}; }
-    if ($t==2) { $tf = .5 + (.5*$dw{$word}/$max); }
+    #my $tf;
+    #if ($t==1) { $tf = $dw{$word}; }
+    #if ($t==2) { $tf = .5 + (.5*$dw{$word}/$max); }
 
     $dw{$word} = $tf; 
   }
