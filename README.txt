@@ -19,7 +19,7 @@ run: ./map.semantic res/T2D-loci.all.genes2 output_file1 > output_file1-2
 
 run.pred
 runs association data prediction 
-run: ./run.pred --i data/T2D.loci --a data/T2D-loci.out.gz --o output_file2 --cds data/T2D-loci.CDS --dhs data/T2D-loci.DHS.vcf --dist data/T2D-loci.dist-50kb
+run: ./run.pred --i data/T2D.loci --a data/T2D-loci.out.gz --o output_file2 --cds data/T2D-loci.CDS --dhs data/T2D-loci.DHS --dist data/T2D-loci.dist-50kb
 --i, list of loci to run
 --a, file of variant association data at each locus
 --o, output
@@ -37,3 +37,5 @@ run: ./merge output_file1-2 output_file2-2 > merged.output
 # resources
 Resource package can be found here
 https://www.dropbox.com/sh/d1z9ota2uw807to/AADbJ_suBCDL7xXxbRzVnbCva?dl=0
+
+Download and unpack the resources into this directory
