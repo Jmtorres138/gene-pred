@@ -1,0 +1,32 @@
+diabetes
+noninsulin-dependent diabetes mellitus
+insulin
+insulin secretion
+insulin resistance 
+metabolism
+hormone
+obesity
+blood glucose
+glucose homeostasis
+hyperglycemia
+hypoglycemia
+glycogen
+glucagon
+pancreas
+pancreatic islets
+pancreatic beta cell
+liver
+lipoprotein
+triglycerides
+carbohydrates
+hepatic
+hepatocyte
+skeletal muscle
+fats
+adipose
+adipocyte
+endocrine
+incretin
+neurological
+neuronal
+aging
