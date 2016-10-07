@@ -1,0 +1,167 @@
+#!/usr/bin/perl
+
+use strict;
+use Getopt::Long;
+use Pod::Usage;
+use lib "/Users/kgaulton/stig/old/Lingua-Stem-0.84/lib/";
+use PDL;
+use Carp;
+use Lingua::Stem qw(stem stem_in_place);
+use vars qw(%Opt);
+
+GetOptions(\%Opt, qw(q=s db=s ow omim=s p=s)) || pod2usage(1);
+pod2usage(-verbose => 1, -message => "STIG - semantic text indexing of genes\n\nArguments:\n--q query document\n--db document database\n") if (!($Opt{db}&&$Opt{q}));
+
+open(WO, "> query.words.out");
+open(DO, "> corpus.words.out");
+open(M, "> words.matrix");
+
+my @db = split(/\n/,`ls $Opt{db}`);
+my $i=0; while($i<scalar(@db)) { $db[$i]=~s/\s+//; $i++; }
+my %sw; open(S, "< /Volumes/KG1/Users/kgaulton/Documents/gene_info/pubmed.stop"); while(<S>) { chomp($_); $sw{$_}=1; }
+
+my %wdb; my $dc=0; my %wdf; my %ddb;
+foreach my $doc (@db) {
+  open(D, "< $Opt{db}/$doc");
+  my $l=<D>;
+  my %w = doc_words($l,1);
+  foreach my $word (keys %w) { $wdb{$word}+=$w{$word}; $wdf{$word}++; }
+  %{$ddb{$doc}}= %w;
+  $dc++;
+}
+
+my $wc=0; my %index; my %rindex;
+foreach my $word (keys %wdb) { $index{$word}=$wc; $rindex{$wc}=$word; $wc++; }
+
+my @vd; my %di; $i=0;
+foreach my $doc (@db) {
+  my $v = zeroes $wc;
+  foreach my $word (keys %{$ddb{$doc}}) {
+    my $idf = log($dc/$wdf{$word});
+    my $tw = $ddb{$doc}{$word}*$idf;
+    index ($v,$index{$word}).=$tw; 
+  }
+
+  push @vd,norm $v; 
+  my @pv = split(/\s+/,$v);
+  my $tv = join("\t",@pv);
+  $tv=~s/\[//; $tv=~s/\]//;
+  $tv=~s/^\s+//;
+  print M "$doc\t$tv\n";
+  
+  $di{$i}=$doc; $i++;
+}
+
+open(Q, "< $Opt{q}");
+my $ql; while(<Q>) { $ql.=$_; }
+my %qw = doc_words($ql,2);
+my $qv = zeroes $wc;
+foreach my $word (keys %qw) {
+  if (exists $index{$word}) {
+    my $idf = log($dc/$wdf{$word});
+    my $tw = $qw{$word}*$idf;
+    $qw{$word}=$tw;
+    index ($qv,$index{$word}).=$tw;
+  }
+}
+
+push @vd,norm $qv;
+my @pv = split(/\s+/,$qv);
+my $tv = join("\t",@pv);
+$tv=~s/\[//; $tv=~s/\]//;
+print M "query\t$tv\n";
+
+#my $n=scalar(@pv)+1;
+
+foreach my $word (sort { $qw{$b} <=> $qw{$a} } keys %qw) { if (exists $wdb{$word}) { print WO "$word\t$qw{$word}\n"; } }
+foreach my $word (sort { $wdb{$b} <=> $wdb{$a} } keys %wdb) { if (exists $wdb{$word}) { print DO "$word\t$wdb{$word}\n"; } }
+
+open(R, "> run_lsa.R");
+print R "w <- read.table(\"words.matrix\",sep=\"\\t\")\n";
+print R "wm <- as.matrix(w[,2:ncol(w)])\n";
+print R "library(lsa)\n";
+print R "l <- lsa(wm)\n";
+my $x=1;
+while($x<19689) {
+  print R "cosine(l\$tk[$x,],l\$tk[19689,])\n";
+  $x++;
+}
+
+my $g = `R --vanilla < run_lsa.R`;
+my @gl = split(/\n/,$g);
+my $y=0;
+foreach my $ge (@gl) {
+  if ($ge=~/^\[/) { my @sp=split(/\s+/,$ge); print "$di{$y}\t$sp[1]\n"; $y++; }
+}
+
+sub get_cos {
+  my %cos;
+  my $i=0;
+  foreach my $vector (@vd) {
+    my $cosine = cosine ( $vector, $_[0] );
+    $cos{$i}=$cosine;
+    $i++;
+  }
+  return %cos;
+}
+
+sub cosine {
+  my ($v1, $v2) = @_;
+  my $cos = inner ($v1, $v2);
+  return $cos->sclr();
+}
+
+sub doc_words {
+  my $d = $_[0];
+  my $t = $_[1];
+
+  my %dw; my $tw;
+  
+  $d=~s/\// /g;
+  $d=~s/\(/ /g;
+  $d=~s/\)/ /g;
+  $d=~s/\./ /g;
+  $d=~s/-/ /g;
+  $d=~s/_/ /g;
+  $d=~s/#/ /g;
+  $d=~s/,/ /g;
+  $d=~s/:/ /g; 
+
+  my @dwa = split(/\s+/, $d);   
+  foreach my $word (@dwa) {
+  my $lcword = lc($word);
+    if (swords($lcword) && length($lcword)>2) {
+      if ($lcword =~ /^[a-z0-9]+$/) {
+        my @ta;
+        push(@ta,$lcword);
+        stem_in_place(@ta);
+        $dw{$ta[0]}++; $tw++;
+      }
+    }
+  }
+
+  my $max=0;
+  foreach my $word (keys %dw) { if ($dw{$word}>$max) { $max=$dw{$word}; } }
+
+  foreach my $word (keys %dw) {  
+    #my $tf = $dw{$word}/$tw; 
+    my $tf = 1+log($dw{$word});
+    #my $tf=1;
+    
+    #my $tf;
+    #if ($t==1) { $tf = $dw{$word}; }
+    #if ($t==2) { $tf = .5 + (.5*$dw{$word}/$max); }
+
+    $dw{$word} = $tf; 
+  }
+
+  return %dw;
+}
+
+
+sub swords {
+  if (exists $sw{$_[0]}) { return 0; }
+  if (length($_[0])<3) { return 0; }
+  else { return 1; }
+}
+
