@@ -3,7 +3,7 @@
 use strict;
 use Getopt::Long;
 use Pod::Usage;
-use lib "/Users/kgaulton/stig/old/Lingua-Stem-0.84/lib/";
+use lib "/Users/jtorres/Software/Lingua-Stem-0.84/lib/";
 use PDL;
 use Carp;
 use Lingua::Stem qw(stem stem_in_place);
@@ -39,16 +39,16 @@ foreach my $doc (@db) {
   foreach my $word (keys %{$ddb{$doc}}) {
     my $idf = log($dc/$wdf{$word});
     my $tw = $ddb{$doc}{$word}*$idf;
-    index ($v,$index{$word}).=$tw; 
+    index ($v,$index{$word}).=$tw;
   }
 
-  push @vd,norm $v; 
+  push @vd,norm $v;
   my @pv = split(/\s+/,$v);
   my $tv = join("\t",@pv);
   $tv=~s/\[//; $tv=~s/\]//;
   $tv=~s/^\s+//;
   print M "$doc\t$tv\n";
-  
+
   $di{$i}=$doc; $i++;
 }
 
@@ -117,7 +117,7 @@ sub doc_words {
   my $t = $_[1];
 
   my %dw; my $tw;
-  
+
   $d=~s/\// /g;
   $d=~s/\(/ /g;
   $d=~s/\)/ /g;
@@ -126,9 +126,9 @@ sub doc_words {
   $d=~s/_/ /g;
   $d=~s/#/ /g;
   $d=~s/,/ /g;
-  $d=~s/:/ /g; 
+  $d=~s/:/ /g;
 
-  my @dwa = split(/\s+/, $d);   
+  my @dwa = split(/\s+/, $d);
   foreach my $word (@dwa) {
   my $lcword = lc($word);
     if (swords($lcword) && length($lcword)>2) {
@@ -144,16 +144,16 @@ sub doc_words {
   my $max=0;
   foreach my $word (keys %dw) { if ($dw{$word}>$max) { $max=$dw{$word}; } }
 
-  foreach my $word (keys %dw) {  
-    #my $tf = $dw{$word}/$tw; 
+  foreach my $word (keys %dw) {
+    #my $tf = $dw{$word}/$tw;
     my $tf = 1+log($dw{$word});
     #my $tf=1;
-    
+
     #my $tf;
     #if ($t==1) { $tf = $dw{$word}; }
     #if ($t==2) { $tf = .5 + (.5*$dw{$word}/$max); }
 
-    $dw{$word} = $tf; 
+    $dw{$word} = $tf;
   }
 
   return %dw;
@@ -165,4 +165,3 @@ sub swords {
   if (length($_[0])<3) { return 0; }
   else { return 1; }
 }
-
