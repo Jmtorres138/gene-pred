@@ -15,7 +15,7 @@ https://metacpan.org/release/Lingua-Stem
 ####1) Run Semantic Mapping  
 **stig**  
 requires: Perl PDL library, Lingua::Stem; R packages lsa and SnowballC  
-run: ./stig --q res/T2D.query.manual.txt --db data/gene-db/ --o output_file1  
+run: perl stig --q res/T2D.query.manual.txt --db data/gene-db/ --o output_file1  
 --q, query .txt file  
 --db, database of gene annotation files  
 --o, output  
