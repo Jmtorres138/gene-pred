@@ -18,10 +18,8 @@ https://metacpan.org/release/Lingua-Stem
 ``use lib "/Users/jtorres/Software/Lingua-Stem-0.84/lib/";``
 
 runs semantic mapping
-
-requires: Perl PDL library, Lingua::Stem; R packages lsa and SnowballC
-
-run: ./stig --q res/T2D.query.manual.txt --db data/gene-db/ --o output_file1
+**requires**: Perl PDL library, Lingua::Stem; R packages lsa and SnowballC
+**run**: ./stig --q res/T2D.query.manual.txt --db data/gene-db/ --o output_file1
 
 --q, query .txt file
 --db, database of gene annotation files
