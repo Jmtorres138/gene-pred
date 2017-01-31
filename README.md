@@ -48,7 +48,7 @@ fun: ./frmt.pred output_file2 > output_file2-2
 **merge**
 run: ./merge output_file1-2 output_file2-2 > merged.output
 
-# resources
+# Resources
 Resource package can be found here
 https://www.dropbox.com/sh/d1z9ota2uw807to/AADbJ_suBCDL7xXxbRzVnbCva?dl=0
 
