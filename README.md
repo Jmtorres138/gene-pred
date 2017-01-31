@@ -25,9 +25,7 @@ runs semantic mapping
 **run**: ./stig --q res/T2D.query.manual.txt --db data/gene-db/ --o output_file1  
 
 --q, query .txt file  
-
 --db, database of gene annotation files  
-
 --o, output  
 
 
