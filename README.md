@@ -1,4 +1,4 @@
-#Gene Prediction Scripts and Data
+# Gene Prediction Scripts and Data
 **gene-pred**
 
 ## Gene tests based on Latent Semantic Analysis
@@ -12,7 +12,7 @@ https://metacpan.org/release/Lingua-Stem
 ``use lib "/Users/jtorres/Software/Lingua-Stem-0.84/lib/";``  
 
 
-####Run Semantic Mapping  
+####1) Run Semantic Mapping  
 **stig**  
 requires: Perl PDL library, Lingua::Stem; R packages lsa and SnowballC  
 run: ./stig --q res/T2D.query.manual.txt --db data/gene-db/ --o output_file1  
@@ -20,14 +20,14 @@ run: ./stig --q res/T2D.query.manual.txt --db data/gene-db/ --o output_file1
 --db, database of gene annotation files  
 --o, output  
 
-####Map Semantic Output to Genes at T2D Loci  
+####2) Map Semantic Output to Genes at T2D Loci  
 
 **map.semantic**  
 run: ./map.semantic res/T2D-loci.all.genes2 output_file1 > output_file1-2
 
 ## Diabetes association mapping
 
-####Run Association Data Prediction  
+####3) Run Association Data Prediction  
 
 **run.pred**  
 run: ./run.pred --i data/T2D.loci --a data/T2D-loci.out.gz --o output_file2 --cds data/T2D-loci.CDS --dhs data/T2D-loci.DHS --dist data/T2D-loci.dist-50kb  
@@ -38,12 +38,13 @@ run: ./run.pred --i data/T2D.loci --a data/T2D-loci.out.gz --o output_file2 --cd
 --dhs, file of DHS annotations  
 --dist, file of distance annotations  
 
-####Format Prediction Output 
+####4) Format Prediction Output 
 
 **frmt.pred**  
 fun: ./frmt.pred output_file2 > output_file2-2
 
-### merge results
+####5) Merge Results  
+
 **merge**
 run: ./merge output_file1-2 output_file2-2 > merged.output
 
