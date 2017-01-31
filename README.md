@@ -5,17 +5,18 @@
 
 ### gene annotation mapping
 
-**stig**
+**stig** 
 
-Note: Downloaded SciPDL on MAC OS X
+Note: Downloaded SciPDL on MAC OS X 
 
-https://sourceforge.net/projects/pdl/files/SciPDL/
+https://sourceforge.net/projects/pdl/files/SciPDL/ 
 
-Note: Downloaded Lingua-Stem and edited path in **stig**
+Note: Downloaded Lingua-Stem and edited path in **stig** 
 
-https://metacpan.org/release/Lingua-Stem
+https://metacpan.org/release/Lingua-Stem 
 
-``use lib "/Users/jtorres/Software/Lingua-Stem-0.84/lib/";``
+``use lib "/Users/jtorres/Software/Lingua-Stem-0.84/lib/";`` 
+
 
 runs semantic mapping
 **requires**: Perl PDL library, Lingua::Stem; R packages lsa and SnowballC
