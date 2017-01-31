@@ -30,6 +30,7 @@ foreach my $doc (@db) {
   $dc++;
 }
 
+
 my $wc=0; my %index; my %rindex;
 foreach my $word (keys %wdb) { $index{$word}=$wc; $rindex{$wc}=$word; $wc++; }
 
@@ -52,6 +53,7 @@ foreach my $doc (@db) {
   $di{$i}=$doc; $i++;
 }
 
+
 open(Q, "< $Opt{q}");
 my $ql; while(<Q>) { $ql.=$_; }
 my %qw = doc_words($ql,2);
@@ -72,6 +74,7 @@ $tv=~s/\[//; $tv=~s/\]//;
 print M "query\t$tv\n";
 
 #my $n=scalar(@pv)+1;
+
 
 foreach my $word (sort { $qw{$b} <=> $qw{$a} } keys %qw) { if (exists $wdb{$word}) { print WO "$word\t$qw{$word}\n"; } }
 foreach my $word (sort { $wdb{$b} <=> $wdb{$a} } keys %wdb) { if (exists $wdb{$word}) { print DO "$word\t$wdb{$word}\n"; } }
