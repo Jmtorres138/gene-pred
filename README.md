@@ -7,10 +7,14 @@
 
 Note: Downloaded SciPDL on MAC OS X  
 https://sourceforge.net/projects/pdl/files/SciPDL/  
+Load PDL with these commands:  
+``source /Applications/PDL/setup_csh``  
+``pdl``  
+
+
 Note: Downloaded Lingua-Stem and edited path in **stig**  
 https://metacpan.org/release/Lingua-Stem  
 ``use lib "/Users/jtorres/Software/Lingua-Stem-0.84/lib/";``  
-
 
 ####1) Run Semantic Mapping  
 **stig**  
