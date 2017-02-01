@@ -5,20 +5,22 @@ use strict;
 my $in=shift;
 
 my %g;
-open(G, "< data/all.genes");
+#open(G, "< data/all.genes");
+open(G, "< data/T2D.loci");
+
 while(my $i=<G>) { chomp($i); $g{$i}=1; }
 
 open(IN, "< $in");
 my %r; my %lr; my $f=1;
 while(my $i=<IN>) {
   chomp($i);
-  
+
   $i=~s/Adipose\.vo/Adipose-vo/g;
   $i=~s/Adipose\.sc/Adipose-sc/g;
 
   my @l=split(/\s+/,$i);
 
-  if ((!($l[1]=~/Intercept/)) && (!($l[1]=~/MAF/))) { 
+  if ((!($l[1]=~/Intercept/)) && (!($l[1]=~/MAF/))) {
   #$l[0]=$1;
   my $locus=$l[0]; my $gene;
 
@@ -41,8 +43,8 @@ while(my $i=<IN>) {
 foreach my $loc (keys %r) {
   foreach my $gene (keys %{$r{$loc}}) {
     #my $s = $r{$loc}{$gene}/$lr{$loc};
-    if (exists $g{$gene}) { 
-    # print "$loc.$tag\t$gene\t$r{$loc}{$gene}\n"; 
+    if (exists $g{$gene}) {
+    # print "$loc.$tag\t$gene\t$r{$loc}{$gene}\n";
     print "$loc\t$gene\t$r{$loc}{$gene}\n";
     }
   }

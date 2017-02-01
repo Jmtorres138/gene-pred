@@ -3,7 +3,7 @@
 use strict;
 use Getopt::Long;
 use Pod::Usage;
-use lib "/Users/kgaulton/stig/old/Lingua-Stem-0.84/lib/";
+use lib "/Users/jtorres/Software/Lingua-Stem-0.84/lib/";
 use PDL;
 use Carp;
 use Lingua::Stem qw(stem stem_in_place);
@@ -12,13 +12,15 @@ use vars qw(%Opt);
 GetOptions(\%Opt, qw(i=s a=s cds=s dist=s dhs=s t=s o=s)) || pod2usage(1);
 pod2usage(-verbose => 1, -message => "run.pred\n\n--i, list of input loci\n--a, .gz file of variant assoc data\n--cds, file of variant coding exon annotations\n--dist, file of variant distance annotations\n--dhs, file of dhs annotations\n--o, output file\n--t, QTL inclusion threshold (default p=.001\n") if (!($Opt{a}&&$Opt{i}&&$Opt{o}&&$Opt{dist}&&$Opt{cds}&&$Opt{dhs}));
 
+
 my $t; if (!($Opt{t})) { $t=.001; } else { $t=$Opt{t}; }
 open(O, "> $Opt{o}");
 open(L, "< $Opt{i}");
 while(my $i=<L>) {
-  chomp($i); 
+  chomp($i);
+  print $i;
+  print "\n";
   my $g = `perl gene_matrix3 $Opt{a} $i $Opt{cds} $Opt{dist} $Opt{dhs} $t`;
   my @s=split(/\n/,$g);
   foreach my $l (@s) { print O "$i\t$l\n"; }
 }
-
