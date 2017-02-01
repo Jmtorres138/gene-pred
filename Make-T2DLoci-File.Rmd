@@ -1,0 +1,51 @@
+---
+title: "Make-T2dLoci-File.Rmd"
+author: "Jason Torres"
+date: "February 1, 2017"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r Rcode}
+library("data.table")
+
+setwd("/Users/jtorres/Google Drive/Science/Projects/T2D-Integration/gene-pred/")
+df1 <- fread("data/T2D-loci.DHS")
+df2 <- fread("data/T2D-loci.CDS")
+df3 <- fread("data/T2D-loci.dist-50kb")
+
+get_loc <- function(s){
+  loc <- substr(s,regexpr(pattern=";LOCUS=",s)[1]+7,nchar(s))
+  return(loc) 
+}
+
+vec1 <- df1$V8
+vec2 <- df2$V8
+vec3 <- df3$V8
+
+s1 <- as.character(sapply(vec1, function(s){
+  loc <- substr(s,regexpr(pattern=";LOCUS=",s)[1]+7,nchar(s))
+  return(loc) 
+}))
+
+s2 <- as.character(sapply(vec2, function(s){
+  loc <- substr(s,regexpr(pattern=";LOCUS=",s)[1]+7,nchar(s))
+  return(loc) 
+}))
+
+s3 <- as.character(sapply(vec3, function(s){
+  loc <- substr(s,regexpr(pattern=";LOCUS=",s)[1]+7,nchar(s))
+  return(loc) 
+}))
+
+s4 <- unique(c(s1,s2,s3))
+
+write.table(s4,file="data/T2D.loci",row.names=FALSE,quote=FALSE,sep="\t",col.names=FALSE)
+
+
+```
